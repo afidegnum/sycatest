@@ -36,14 +36,14 @@ async fn Child<G: Html>(cx: Scope<'_>, block: Block) -> View<G> {
         div {
             p { "Content loaded after " (delay_ms) "ms" }
 
-            p { (tab.content(cx)) }
+            p { (block.content(cx)) }
         }
     }
 }
 
 #[component]
 fn App<G: Html>(cx: Scope) -> View<G> {
-    let tab = create_signal(cx, Block::One);
+    let block = create_signal(cx, Block::One);
     let transition = use_transition(cx);
     let update = move |x| transition.start(move || block.set(x), || ());
 
@@ -56,8 +56,8 @@ fn App<G: Html>(cx: Scope) -> View<G> {
             button(on:click=move |_| update(Block::Three)) { "Three" }
             Suspense(fallback=view! { cx, p { "Loading..." } }) {
                 ({
-                    let tab = *tab.get();
-                    view! { cx, Child(tab) }
+                    let block = *block.get();
+                    view! { cx, Child(block) }
                 })
             }
         }
