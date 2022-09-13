@@ -32,11 +32,18 @@ async fn Child<G: Html>(cx: Scope<'_>, block: Block) -> View<G> {
     let delay_ms = rand::thread_rng().gen_range(200..500);
     TimeoutFuture::new(delay_ms).await;
 
+    let content = if let Ok(content) = block.content::<G>(cx) {
+        view! { cx, (content) }
+    } else {
+        view! { cx, "Oh no!" }
+    };
+
     view! { cx,
         div {
             p { "Content loaded after " (delay_ms) "ms" }
 
-            p { (block.content(cx)) }
+            p { (if let Ok(content) = block.content(cx) { view! { cx, (content) } } else { view! { cx, "Oh no!" } }) }
+            p { (content) }
         }
     }
 }
